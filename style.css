@@ -1,4 +1,4 @@
-.number-button {
+.button {
   width: 56px;
   height: 56px;
   border: solid 1px;
@@ -12,11 +12,11 @@
   cursor: default;
 }
 
-.number-button:hover {
+.button:hover {
   border: solid 2px;
 }
 
-.number-button:active {
+.button:active {
   border: solid 3px;
 }
 
@@ -24,7 +24,7 @@
   width: 136px;
 }
 
-.buttons {
+.buttons-div {
   width: 320px;
   height: 320px;
   display: flex;
