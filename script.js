@@ -1,86 +1,95 @@
-// Create empty array
-let holderArray = ['0'];
-// Variable to dictate which array location is being written to; default to first position
-let activeArrayIndex = 0;
-// Variable to hold the type of operation to be performed
+// Variable that will be displayed on screen as numbers are typed. Number is stored as string.
+let activeNumber = '0'
+// Variable that will be operated on. Overwritten as value for activeNumber whenever equals or an operator is pressed.
+let memoryNumber = ''
+// Variable to hold a string indicating the type of operation to be performed
 let operationType = ''
 // Query selector for display element
 displaySelector = document.querySelector(".display-text");
-// Function for updating display
+// Writes intial value for the caculator screen
 displaySelector.innerText = '0';
+// Variable to determine last button type pressed; helps determine behavior for sequential presses
 let lastPress = '';
 
 // Updates the active array by updating the index with the new value at the end, returns the complete value
-let updateActiveArrayIndex = function (newValue) {
-    holderArray[activeArrayIndex] = holderArray[activeArrayIndex] + '' + newValue;
-    return holderArray[activeArrayIndex];
+let updateActiveNumber = function (newValue) {
+    activeNumber += '' + newValue;
+    return activeNumber;
 };
 
 // Build numbers in active holder array index based on button presses
 numberButtonSelector = document.querySelectorAll(".number");
 numberButtonSelector.forEach(numberButton => {
     numberButton.addEventListener('click', () => {
-        if (lastPress == 'equals') {clearHolderArray()};
-        if (holderArray[activeArrayIndex].length > 10 ) {return} // Prevents overflow
-        if (holderArray[activeArrayIndex] == '0') {holderArray[activeArrayIndex] = ''}; // Clears zero before new number is added
-        displaySelector.innerText = updateActiveArrayIndex(numberButton.innerText); // updates display to reflect value at active array index
-        console.log('Current Holder Array Index: ' +  activeArrayIndex)
+        if (lastPress == 'equals') {
+            clearMemory()
+            
+        }; // If user enters a number after pressing 'equals', they start with fresh memory
+        if (activeNumber.length > 10 ) {return} // Prevents overflow
+        if (activeNumber == '0') {activeNumber = ''}; // Clears zero before new number is added to prevent leading zeroes
+        displaySelector.innerText = updateActiveNumber(numberButton.innerText); // updates display to reflect value at active array index
         lastPress = 'number'
     });
 });
 
-// clear the holder array index and display
-document.getElementById('clear').addEventListener('click', () => {
-    activeArrayIndex = 0
-    holderArray = ['0']
-    displaySelector.innerText = holderArray[activeArrayIndex];
-});
-// Execute previously selected operator on two newest values in holder array
+// Function to reset active and memory number & operation type. Does not change display
+let clearMemory = function () {
+    activeNumber = '0'
+    memoryNumber = ''
+    operationType = ''
+}
+
+// Execute previously selected operator on activeNumber and memoryNumber.
 document.getElementById('equals').addEventListener('click', () => {
     lastPress='equals';
-    if (activeArrayIndex == 0) {return} // Nothing happens if only a single number has been entered
-    calculate(operationType);
+    memoryNumber = calculate(operationType)
+    displaySelector.innerText = memoryNumber;
 });
 
-// Select operation to be performed on second number
+document.getElementById('clear').addEventListener('click', () => {
+    clearMemory();
+    displaySelector.innerText = '0'
+});
+
+// Select operation to be performed
 operatorButtonSelector = document.querySelectorAll(".operator");
 operatorButtonSelector.forEach(operatorButton => {
     operatorButton.addEventListener('click', () => {
-        if (lastPress == 'operator') {return}; // avoids accidental double operation 
-        operationType = operatorButton.id; // Get operation type from element ID
-        if (activeArrayIndex == 0) { // Appends new value to array and returns with no calculation
-            holderArray.push('0');
-            activeArrayIndex = 1;
-            return;
-        }
-        calculate(operationType);
+        operationType = operatorButton.id; // Get operation type from element ID for sending to calculate function.
+        // if (lastPress == 'operator' || lastPress == 'equals') {return}; // avoids accidental double operation and allows for operation to be changed.
+        if (memoryNumber == '') {
+                memoryNumber = activeNumber;
+                activeNumber = '';
+            } else {
+                memoryNumber = calculate(operationType)
+                displaySelector.innerText = memoryNumber;
+                activeNumber = '';
+            }
         lastPress = 'operator'
     });
 });
 
+// Performs operation between activeNumber and memoryNumber depending on operation type.
 let calculate = function (calcType) {
     if (calcType == 'add') {
-        result = String(Number(holderArray[activeArrayIndex-1]) + Number(holderArray[activeArrayIndex]));
+        result = String(Number(memoryNumber) + Number(activeNumber));
     } else if (calcType == 'subtract') {
-        result = String(Number(holderArray[activeArrayIndex-1]) - Number(holderArray[activeArrayIndex]));
+        result = String(Number(memoryNumber) - Number(activeNumber));
     } else if (calcType == 'multiply') {
-        result = String(Number(holderArray[activeArrayIndex-1]) * Number(holderArray[activeArrayIndex]));
+        result = String(Number(memoryNumber) * Number(activeNumber));
     } else if (calcType == 'divide') {
-        if (Number(holderArray[activeArrayIndex]) == 0) {
-            displaySelector.innerText = "uhhhh..."
-            clearHolderArray();
-            return;
+        if (Number(activeNumber) == '0') { // divide by zero handling
+            result = "uhhhh..."
+            clearMemory();
         }
-        else {result = String(Number(holderArray[activeArrayIndex-1]) / Number(holderArray[activeArrayIndex]))};
+        else {result = String(Number(memoryNumber) / Number(activeNumber));};
     }
-    holderArray.push(result); // pushes calculated value to array
-    activeArrayIndex += 1; // moves acive array position to newly created result position
-    displaySelector.innerText = holderArray[activeArrayIndex]; // changes inner text to reflect result
-    holderArray.push('0') // Creates new empty slot in array for next number to occupy
-    activeArrayIndex += 1; // Changes active array index to latest
+    return result;
 }
 
-let clearHolderArray = function () {
-    activeArrayIndex = 0
-    holderArray = ['0']
+let logInfo = function () {
+    console.log('activeNumber: ' + activeNumber);
+    console.log('memoryNumber: ' + memoryNumber);
+    console.log('operationType: ' + operationType);
+    console.log('lastPress: ' + lastPress);
 }
