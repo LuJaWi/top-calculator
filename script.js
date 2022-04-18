@@ -8,6 +8,7 @@ let operationType = ''
 displaySelector = document.querySelector(".display-text");
 // Function for updating display
 displaySelector.innerText = '0';
+let lastPress = '';
 
 // Updates the active array by updating the index with the new value at the end, returns the complete value
 let updateActiveArrayIndex = function (newValue) {
@@ -19,10 +20,12 @@ let updateActiveArrayIndex = function (newValue) {
 numberButtonSelector = document.querySelectorAll(".number");
 numberButtonSelector.forEach(numberButton => {
     numberButton.addEventListener('click', () => {
+        if (lastPress == 'equals') {clearHolderArray()};
         if (holderArray[activeArrayIndex].length > 10 ) {return} // Prevents overflow
         if (holderArray[activeArrayIndex] == '0') {holderArray[activeArrayIndex] = ''}; // Clears zero before new number is added
         displaySelector.innerText = updateActiveArrayIndex(numberButton.innerText); // updates display to reflect value at active array index
         console.log('Current Holder Array Index: ' +  activeArrayIndex)
+        lastPress = 'number'
     });
 });
 
@@ -34,6 +37,7 @@ document.getElementById('clear').addEventListener('click', () => {
 });
 // Execute previously selected operator on two newest values in holder array
 document.getElementById('equals').addEventListener('click', () => {
+    lastPress='equals';
     if (activeArrayIndex == 0) {return} // Nothing happens if only a single number has been entered
     calculate(operationType);
 });
@@ -42,6 +46,7 @@ document.getElementById('equals').addEventListener('click', () => {
 operatorButtonSelector = document.querySelectorAll(".operator");
 operatorButtonSelector.forEach(operatorButton => {
     operatorButton.addEventListener('click', () => {
+        if (lastPress == 'operator') {return}; // avoids accidental double operation 
         operationType = operatorButton.id; // Get operation type from element ID
         if (activeArrayIndex == 0) { // Appends new value to array and returns with no calculation
             holderArray.push('0');
@@ -49,6 +54,7 @@ operatorButtonSelector.forEach(operatorButton => {
             return;
         }
         calculate(operationType);
+        lastPress = 'operator'
     });
 });
 
@@ -60,11 +66,21 @@ let calculate = function (calcType) {
     } else if (calcType == 'multiply') {
         result = String(Number(holderArray[activeArrayIndex-1]) * Number(holderArray[activeArrayIndex]));
     } else if (calcType == 'divide') {
-        result = String(Number(holderArray[activeArrayIndex-1]) / Number(holderArray[activeArrayIndex]));
+        if (Number(holderArray[activeArrayIndex]) == 0) {
+            displaySelector.innerText = "uhhhh..."
+            clearHolderArray();
+            return;
+        }
+        else {result = String(Number(holderArray[activeArrayIndex-1]) / Number(holderArray[activeArrayIndex]))};
     }
     holderArray.push(result); // pushes calculated value to array
     activeArrayIndex += 1; // moves acive array position to newly created result position
     displaySelector.innerText = holderArray[activeArrayIndex]; // changes inner text to reflect result
     holderArray.push('0') // Creates new empty slot in array for next number to occupy
     activeArrayIndex += 1; // Changes active array index to latest
+}
+
+let clearHolderArray = function () {
+    activeArrayIndex = 0
+    holderArray = ['0']
 }
