@@ -1,32 +1,13 @@
-// Create a script that writes each number key press to the first index in an array
-
-// Multiple number key presses should concatenate that key with previous entries to build larger numbers
-
-// When an operation key is pressed, 
-// iterate to the next index position and save the operation type
-
-// When "=" is pressed, perform the operation on the two sets of numbers, display the results
-// and clear the holder array
-
-// If a number, an operator, and a number are followed by another operator, write the output
-// of the first operation set to the display and write the
-// output to the first array position and repeat the previous steps until "=" is pressed.
-
-// Create holder array where [0],[1] are values to be operated on
-// stored as strings so new integers can be concatenated easily
-let holderArray = ['0','0'];
-// variable to dictate which array location is being written to; default to first position
+// Create empty array
+let holderArray = ['0'];
+// Variable to dictate which array location is being written to; default to first position
 let activeArrayIndex = 0;
-
+// Variable to hold the type of operation to be performed
+let operationType = ''
+// Query selector for display element
 displaySelector = document.querySelector(".display-text");
-
-let displayActive = function () {
-    displaySelector.innerText = holderArray[activeArrayIndex];
-}
-
-displayActive();
-
-// Create Event Listeners
+// Function for updating display
+displaySelector.innerText = '0';
 
 // Updates the active array by updating the index with the new value at the end, returns the complete value
 let updateActiveArrayIndex = function (newValue) {
@@ -34,21 +15,51 @@ let updateActiveArrayIndex = function (newValue) {
     return holderArray[activeArrayIndex];
 };
 
-numberButtonSelector = document.querySelectorAll(".number");
-
-
 // Build numbers in active holder array index based on button presses
+numberButtonSelector = document.querySelectorAll(".number");
 numberButtonSelector.forEach(numberButton => {
     numberButton.addEventListener('click', () => {
         if (holderArray[activeArrayIndex].length > 10 ) {return} // Prevents overflow
-        if (holderArray[activeArrayIndex] == '0') {holderArray[activeArrayIndex] = ''}; // Prevents leading zeroes
-        displaySelector.innerText = updateActiveArrayIndex(numberButton.innerText); // updates display to reflect active array index
+        if (holderArray[activeArrayIndex] == '0') {holderArray[activeArrayIndex] = ''}; // Clears zero before new number is added
+        displaySelector.innerText = updateActiveArrayIndex(numberButton.innerText); // updates display to reflect value at active array index
         console.log('Current Holder Array Index: ' +  activeArrayIndex)
     });
 });
 
 // clear the holder array index and display
 document.getElementById('clear').addEventListener('click', () => {
-    holderArray[activeArrayIndex] = '0';
-    displaySelector.innerText = holderArray[activeArrayIndex];
-})
+    activeArrayIndex = 0
+    holderArray = ['0']
+});
+
+// Select operation to be performed on second number
+operatorButtonSelector = document.querySelectorAll(".operator");
+operatorButtonSelector.forEach(operatorButton => {
+    operatorButton.addEventListener('click', () => {
+        operationType = operatorButton.id; // Get operation type from element ID
+        if (activeArrayIndex == 0) { // Appends new value to array and returns with no calculation
+            holderArray.push('0');
+            activeArrayIndex = 1;
+            return;
+        } else {
+            holderArray.push(calculate(operationType)); // performs calculation and pushes result to array
+            activeArrayIndex += 1; // moves acive array position to newly created result position
+            displaySelector.innerText = holderArray[activeArrayIndex]; // changes inner text to reflect result
+            holderArray.push('0') // Creates new empty slot in array for next number to occupy
+            activeArrayIndex += 1; // Changes active array index to latest
+        }
+    });
+});
+
+let calculate = function (calcType) {
+    if (calcType == 'add') {
+        result = String(Number(holderArray[activeArrayIndex-1]) + Number(holderArray[activeArrayIndex]));
+    } else if (calcType == 'subtract') {
+        result = String(Number(holderArray[activeArrayIndex-1]) - Number(holderArray[activeArrayIndex]));
+    } else if (calcType == 'multiply') {
+        result = String(Number(holderArray[activeArrayIndex-1]) * Number(holderArray[activeArrayIndex]));
+    } else if (calcType == 'divide') {
+        result = String(Number(holderArray[activeArrayIndex-1]) / Number(holderArray[activeArrayIndex]));
+    }
+    return result;
+}
