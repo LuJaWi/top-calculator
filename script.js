@@ -30,6 +30,12 @@ numberButtonSelector.forEach(numberButton => {
 document.getElementById('clear').addEventListener('click', () => {
     activeArrayIndex = 0
     holderArray = ['0']
+    displaySelector.innerText = holderArray[activeArrayIndex];
+});
+// Execute previously selected operator on two newest values in holder array
+document.getElementById('equals').addEventListener('click', () => {
+    if (activeArrayIndex == 0) {return} // Nothing happens if only a single number has been entered
+    calculate(operationType);
 });
 
 // Select operation to be performed on second number
@@ -42,11 +48,7 @@ operatorButtonSelector.forEach(operatorButton => {
             activeArrayIndex = 1;
             return;
         } else {
-            holderArray.push(calculate(operationType)); // performs calculation and pushes result to array
-            activeArrayIndex += 1; // moves acive array position to newly created result position
-            displaySelector.innerText = holderArray[activeArrayIndex]; // changes inner text to reflect result
-            holderArray.push('0') // Creates new empty slot in array for next number to occupy
-            activeArrayIndex += 1; // Changes active array index to latest
+            calculate(operationType);
         }
     });
 });
@@ -61,5 +63,9 @@ let calculate = function (calcType) {
     } else if (calcType == 'divide') {
         result = String(Number(holderArray[activeArrayIndex-1]) / Number(holderArray[activeArrayIndex]));
     }
-    return result;
+    holderArray.push(result); // pushes calculated value to array
+    activeArrayIndex += 1; // moves acive array position to newly created result position
+    displaySelector.innerText = holderArray[activeArrayIndex]; // changes inner text to reflect result
+    holderArray.push('0') // Creates new empty slot in array for next number to occupy
+    activeArrayIndex += 1; // Changes active array index to latest
 }
