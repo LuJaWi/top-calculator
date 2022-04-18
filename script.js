@@ -49,7 +49,6 @@ operatorButtonSelector.forEach(operatorButton => {
             return;
         }
         calculate(operationType);
-        
     });
 });
 
