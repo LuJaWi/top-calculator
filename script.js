@@ -47,9 +47,9 @@ operatorButtonSelector.forEach(operatorButton => {
             holderArray.push('0');
             activeArrayIndex = 1;
             return;
-        } else {
-            calculate(operationType);
         }
+        calculate(operationType);
+        
     });
 });
 

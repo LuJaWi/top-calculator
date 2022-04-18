@@ -45,6 +45,9 @@
   width: 296px;
   margin: 12px;
   border-radius: 20px;
+  box-sizing: border-box;
+  border: 3px solid;
+  border-color: rgb(91, 91, 91);
 }
 
 .logo-solar {
