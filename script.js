@@ -43,6 +43,7 @@ let clearMemory = function () {
 document.getElementById('equals').addEventListener('click', () => {
     lastPress='equals';
     memoryNumber = calculate(operationType)
+    activeNumber = '';
     displaySelector.innerText = memoryNumber;
 });
 
@@ -55,8 +56,10 @@ document.getElementById('clear').addEventListener('click', () => {
 operatorButtonSelector = document.querySelectorAll(".operator");
 operatorButtonSelector.forEach(operatorButton => {
     operatorButton.addEventListener('click', () => {
-        operationType = operatorButton.id; // Get operation type from element ID for sending to calculate function.
-        // if (lastPress == 'operator' || lastPress == 'equals') {return}; // avoids accidental double operation and allows for operation to be changed.
+        if (lastPress == 'equals') {
+            lastPress = 'operator'
+            return
+        };
         if (memoryNumber == '') {
                 memoryNumber = activeNumber;
                 activeNumber = '';
@@ -65,6 +68,7 @@ operatorButtonSelector.forEach(operatorButton => {
                 displaySelector.innerText = memoryNumber;
                 activeNumber = '';
             }
+        operationType = operatorButton.id;
         lastPress = 'operator'
     });
 });
