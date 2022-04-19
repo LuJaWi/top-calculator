@@ -105,6 +105,26 @@ document.getElementById('positive-negative').addEventListener('click', () => {
     displaySelector.innerText = activeNumber;
 });
 
+// Divides number on screen by 100 when % button is pressed
+document.getElementById('percent').addEventListener('click', () => {
+    if (lastPress == 'equals') {
+        activeNumber = memoryNumber;
+
+    }
+    activeNumber = String(Number(activeNumber)/100);
+    displaySelector.innerText = activeNumber;
+});
+
+// Trims numbers to make sure they fit on display
+let trimAndDisplay = function(input) {
+    if (input.length > 11) {return input} // Returns input unchanged if it already fits
+    if (Number(input) > 0) {
+        
+    } else {
+
+    }
+}
+
 // Function to be called in the console to help with troubleshooting
 let logInfo = function () {
     console.log('activeNumber: ' + activeNumber);
