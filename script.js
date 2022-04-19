@@ -27,6 +27,7 @@ numberButtonSelector.forEach(numberButton => {
         }; // If user enters a number after pressing 'equals', they start with fresh memory
         if (activeNumber.length > 10 ) {return} // Prevents overflow
         if (activeNumber == '0') {activeNumber = ''}; // Clears zero before new number is added to prevent leading zeroes
+        if (activeNumber == '-0') {activeNumber = '-'}; // Allows minus symbol to be appended before numbers are typed.
         displaySelector.innerText = updateActiveNumber(numberButton.innerText); // updates display to reflect value at active array index
         lastPress = 'number'
     });
@@ -91,6 +92,20 @@ let calculate = function (calcType) {
     return result;
 }
 
+// Change whether activeNumber is positive or negative
+document.getElementById('positive-negative').addEventListener('click', () => {
+    if (activeNumber == '0') {
+        activeNumber = "-0"
+    } else {
+        if (lastPress == 'equals') { // Move number to active and swap plus/minus
+            activeNumber = memoryNumber; 
+        }
+        activeNumber = String(Number(activeNumber)*-1);
+    }
+    displaySelector.innerText = activeNumber;
+});
+
+// Function to be called in the console to help with troubleshooting
 let logInfo = function () {
     console.log('activeNumber: ' + activeNumber);
     console.log('memoryNumber: ' + memoryNumber);
