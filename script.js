@@ -45,7 +45,7 @@ document.getElementById('equals').addEventListener('click', () => {
     lastPress='equals';
     memoryNumber = calculate(operationType)
     activeNumber = '';
-    displaySelector.innerText = memoryNumber;
+    displaySelector.innerText = trim(memoryNumber);
 });
 
 document.getElementById('clear').addEventListener('click', () => {
@@ -66,7 +66,7 @@ operatorButtonSelector.forEach(operatorButton => {
                 activeNumber = '';
             } else {
                 memoryNumber = calculate(operationType)
-                displaySelector.innerText = memoryNumber;
+                displaySelector.innerText = trim(memoryNumber);
                 activeNumber = '';
             }
         operationType = operatorButton.id;
@@ -116,12 +116,23 @@ document.getElementById('percent').addEventListener('click', () => {
 });
 
 // Trims numbers to make sure they fit on display
-let trimAndDisplay = function(input) {
-    if (input.length > 11) {return input} // Returns input unchanged if it already fits
-    if (Number(input) > 0) {
-        
+let trim = function(input) {
+    if (input.length < 11) {
+        return input
+    } // Returns input unchanged if it already fits
+    if (!input.includes('.')) { // throws overflow error if number is not a decimal
+        clearMemory();
+        return "OverflowErr"
     } else {
-
+        decimalLocation = input.search('.')
+        if (decimalLocation > 12) { // Throws overflow error if rounded number is greater than 11 digits.
+            clearMemory();
+            return "OverflowErr"
+        }
+        wholeNumber = input.slice(0, decimalLocation);
+        decimalNumber = inputSlice(decimalLocation+1)
+        roundedDecimal = (Math.round(Number(input*10000000000))/10000000000);
+        return roundedDecimal
     }
 }
 
